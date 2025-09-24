@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard ข้อมูลพฤติกรรมลูกค้า</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #f1f5f9;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            padding: 1.5rem;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+    <header class="bg-white shadow-md py-6 mb-8">
+        <div class="container mx-auto px-6">
+            <h1 class="text-3xl font-bold text-center text-gray-800">แดชบอร์ดข้อมูลพฤติกรรมลูกค้า</h1>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 mb-8">
+        <!-- ไม่ต้องมีปุ่มอัปโหลดแล้ว เนื่องจากดึงข้อมูลจาก URL โดยตรง -->
+
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="card text-center flex flex-col items-center justify-center">
+                <h2 class="text-xl font-semibold text-gray-600">จำนวนผู้ใช้งานทั้งหมด</h2>
+                <div id="total-users-card" class="text-5xl font-bold mt-2" style="color: #118AB2;">0</div>
+            </div>
+            <div class="card text-center flex flex-col items-center justify-center">
+                <h2 class="text-xl font-semibold text-gray-600">คะแนนความพึงพอใจเฉลี่ย</h2>
+                <div id="avg-satisfaction-card" class="text-5xl font-bold mt-2" style="color: #06D6A0;">0</div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="card lg:col-span-1">
+                <h2 class="text-xl font-semibold mb-4 text-center">ยอดนิยมเเต่ละเเพลตฟอร์ม</h2>
+                <div class="chart-container">
+                    <canvas id="platformChart"></canvas>
+                </div>
+            </div>
+            <div class="card lg:col-span-1">
+                <h2 class="text-xl font-semibold mb-4 text-center">สัดส่วนเพศ</h2>
+                <div class="chart-container">
+                    <canvas id="genderChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2 class="text-xl font-semibold mb-4">ข้อมูลลูกค้าทั้งหมด</h2>
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                <div class="w-full md:w-auto">
+                    <label for="filter-input" class="block text-sm font-medium text-gray-700">กรองข้อมูล:</label>
+                    <input type="text" id="filter-input" placeholder="ค้นหา..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 px-3 py-2">
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">อายุ</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">เพศ</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ระดับรายได้</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">การศึกษา</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">สถานที่</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ความถี่ช้อปปิ้ง</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">แพลตฟอร์มที่ชอบ</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ค่าใช้จ่ายเฉลี่ย</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วิธีชำระเงิน</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">หมวดหมู่สินค้า</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">คะแนนความพึงพอใจ</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">แนวโน้มแนะนำ</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันสุดท้ายที่ซื้อ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-table-body" class="bg-white divide-y divide-gray-200">
+                        <tr class="text-center"><td colspan="14" class="py-4">กำลังโหลดข้อมูล...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let customerData = [];
+        let platformChart, genderChart;
+        const DATA_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_XaWTBTEaxVkEbcxOsQkqgC8bWy_IpqPN-Y113DEY-0PWNnEZalisf7v7vo9NrUVEVtMMhumvJjV2/pub?gid=0&single=true&output=csv';
+
+        function parseCSV(csv) {
+            const lines = csv.trim().split('\n');
+            const headers = lines[0].split(',');
+            return lines.slice(1).map(line => {
+                const values = line.split(',');
+                const obj = {};
+                headers.forEach((header, i) => {
+                    obj[header] = values[i];
+                });
+                return obj;
+            });
+        }
+
+        function renderKPIs() {
+            if (customerData.length === 0) {
+                document.getElementById('total-users-card').innerText = 0;
+                document.getElementById('avg-satisfaction-card').innerText = 0;
+                return;
+            }
+            const totalUsers = customerData.length;
+            document.getElementById('total-users-card').innerText = totalUsers;
+            const totalSatisfaction = customerData.reduce((sum, user) => sum + parseFloat(user.satisfaction_score), 0);
+            const avgSatisfaction = (totalSatisfaction / totalUsers).toFixed(2);
+            document.getElementById('avg-satisfaction-card').innerText = avgSatisfaction;
+        }
+
+        function renderCharts() {
+            const platformCounts = customerData.reduce((acc, user) => {
+                acc[user.preferred_platform] = (acc[user.preferred_platform] || 0) + 1;
+                return acc;
+            }, {});
+            const genderCounts = customerData.reduce((acc, user) => {
+                acc[user.gender] = (acc[user.gender] || 0) + 1;
+                return acc;
+            }, {});
+
+            if (platformChart) {
+                platformChart.destroy();
+            }
+            platformChart = new Chart(document.getElementById('platformChart'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(platformCounts),
+                    datasets: [{
+                        label: 'จำนวนผู้ใช้งาน',
+                        data: Object.values(platformCounts),
+                        backgroundColor: '#118AB2',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: (tooltipItems) => {
+                                    const item = tooltipItems[0];
+                                    let label = item.chart.data.labels[item.dataIndex];
+                                    if (Array.isArray(label)) {
+                                        return label.join(' ');
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            if (genderChart) {
+                genderChart.destroy();
+            }
+            genderChart = new Chart(document.getElementById('genderChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['ชาย', 'หญิง'],
+                    datasets: [{
+                        data: [genderCounts['Male'], genderCounts['Female']],
+                        backgroundColor: ['#06D6A0', '#EF476F'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: (tooltipItems) => {
+                                    const item = tooltipItems[0];
+                                    let label = item.chart.data.labels[item.dataIndex];
+                                    if (Array.isArray(label)) {
+                                        return label.join(' ');
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTable(data) {
+            const tableBody = document.getElementById('data-table-body');
+            tableBody.innerHTML = '';
+            if (data.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = '<td colspan="14" class="py-4 text-center text-gray-500">ไม่พบข้อมูลที่ตรงกับคำค้นหา</td>';
+                tableBody.appendChild(tr);
+                return;
+            }
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-100 transition-colors duration-200';
+                Object.values(row).forEach(value => {
+                    const td = document.createElement('td');
+                    td.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900';
+                    td.innerText = value;
+                    tr.appendChild(td);
+                });
+                tableBody.appendChild(tr);
+            });
+        }
+
+        document.getElementById('filter-input').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredData = customerData.filter(row => {
+                return Object.values(row).some(value => {
+                    return String(value).toLowerCase().includes(searchTerm);
+                });
+            });
+            renderTable(filteredData);
+        });
+
+        async function loadData() {
+            try {
+                const response = await fetch(DATA_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const csvContent = await response.text();
+                customerData = parseCSV(csvContent);
+                renderKPIs();
+                renderCharts();
+                renderTable(customerData);
+            } catch (error) {
+                const tableBody = document.getElementById('data-table-body');
+                tableBody.innerHTML = '<tr class="text-center"><td colspan="14" class="py-4 text-red-500">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>';
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>
