@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Profile</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #e6f2ff, #ffffff);
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: #333;
+    }
+
+    .profile-card {
+      background: #fff;
+      border: 2px solid #cce7ff;
+      border-radius: 20px;
+      padding: 30px;
+      width: 360px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0, 123, 255, 0.15);
+      transition: transform 0.3s ease;
+    }
+
+    .profile-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 25px rgba(0, 123, 255, 0.25);
+    }
+
+    .profile-card img {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #66b3ff;
+      margin-bottom: 20px;
+    }
+
+    .profile-card h1 {
+      font-size: 20px;
+      color: #0066cc;
+      margin: 10px 0;
+    }
+
+    .profile-card p {
+      font-size: 14px;
+      margin: 6px 0;
+      color: #444;
+    }
+
+    .profile-card p strong {
+      color: #0066cc;
+    }
+
+    .btn-contact {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 10px 20px;
+      background: #66b3ff;
+      border: none;
+      border-radius: 25px;
+      color: #fff;
+      font-size: 14px;
+      text-decoration: none;
+      transition: 0.3s;
+      box-shadow: 0 4px 10px rgba(102, 179, 255, 0.4);
+    }
+
+    .btn-contact:hover {
+      background: #3399ff;
+      box-shadow: 0 6px 15px rgba(51, 153, 255, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="profile-card">
+    <img src="earn.JPG" alt="Chonlada">
+    <h1>Chonlada Kanyapila</h1>
+    <p><strong>E-mail:</strong> chonladakanyapila@gmail.com</p>
+    <p><strong>Department:</strong> Rattaprachar Wittayakan</p>
+    <p><strong>Major:</strong> Computer</p>
+    <a href="mailto:chonladakanyapila@gmail.com" class="btn-contact">ส่งข้อความมาจ้า</a>
+  </div>
+</body>
+</html>
